@@ -25,10 +25,10 @@ qplot(x=pr_herit,geom="density")
 
 ##Writing the prior model for multi-response
 K <- 10000		#Number of iterations
-nu <- 2		#nu parameter
+nu <- 1000		#nu parameter
 dim <- 2		#dimensions of the multivariate model
 alpha.mu <- c(0,0)	#alpha.mu parameter
-alpha.V <- diag(c(1000, 1)) #alpha.V parameter
+alpha.V <- diag(c(1, 1)) #alpha.V parameter
 
 #Prior for extended parameter Va
 pr_var_eta <- rIW(n=K,V=diag(dim),nu=nu, fix = 2)
