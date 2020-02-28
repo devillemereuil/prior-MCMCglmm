@@ -1,6 +1,7 @@
 library(mvtnorm)
 library(MCMCglmm)
 library(ggplot2)
+library(progress)
 
 ##Writing the prior model for monovariate
 K <- 100000	#Number of iterations
@@ -23,14 +24,14 @@ pr_herit <- pr_var_a / (pr_var_a + 1)
 qplot(x=pr_herit,geom="density")
 
 ##Writing the prior model for multi-response
-K <- 100000		#Number of iterations
-nu <- 1000		#nu parameter
+K <- 10000		#Number of iterations
+nu <- 2		#nu parameter
 dim <- 2		#dimensions of the multivariate model
 alpha.mu <- c(0,0)	#alpha.mu parameter
-alpha.V <- diag(dim)	#alpha.V parameter
+alpha.V <- diag(c(1000, 1)) #alpha.V parameter
 
 #Prior for extended parameter Va
-pr_var_eta <- rIW(n=K,V=diag(dim),nu=nu)
+pr_var_eta <- rIW(n=K,V=diag(dim),nu=nu, fix = 2)
 pr_alpha <- rmvnorm(K,alpha.mu,alpha.V)
 pr_tot <- cbind(pr_alpha,pr_var_eta)
 
@@ -53,8 +54,9 @@ herit1 <- numeric(K)
 herit2 <- numeric(K)
 corG <- numeric(K)
 corE <- numeric(K)
+pb <- progress::progress_bar$new(total = K, force = TRUE, format  = "[:bar] :percent ETA: :eta")
 for (i in 1:K){
-  print(i)
+  pb$tick()
   herit1[i] <- pr_var_G[[i]][1,1]/(pr_var_G[[i]][1,1] + pr_var_R[[i]][1,1])
   herit2[i] <- pr_var_G[[i]][2,2]/(pr_var_G[[i]][2,2] + pr_var_R[[i]][2,2])
   corG[i] <- cov2cor(pr_var_G[[i]])[1,2]
